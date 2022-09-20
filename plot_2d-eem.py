@@ -7,7 +7,9 @@ import numpy as np
 
 def get_fileNames(filePath):
     """
-    Fetch the names of all files in the folder, and returns a list of all the .csv files.
+    Extract a list of .csv file names from fluorescence data folder.
+    :param filePath: path to .csv file folder.
+    :return: list of file names.
     """ 
     fileList = os.listdir(filePath)
     fileNames = sorted([file for file in fileList if file.endswith('.csv')])
@@ -16,8 +18,10 @@ def get_fileNames(filePath):
 
 def get_XYZ(filePath, fileName):
     """
-    Takes a .csv file and reads it into a Pandas DataFrame. Returns 2D arrays of x,y coordinates X and Y
-    along with the contour data Z
+    Read fluorescence file into a Pandas DataFrame. Returns arrays of x,y coordinates along contour data.
+    :param filePath: path to .csv file folder.
+    :param fileName: file name.
+    :return: X,Y coordinate arrays and Z contour array. 
     """
     # Import data into Dataframe and transpose so that excitation data (x-axis) is arranged in to columns
     # and emission data (y-axis) is arranged into rows.
@@ -32,9 +36,16 @@ def get_XYZ(filePath, fileName):
     
     return X, Y, Z
 
-def plot_contour(X, Y, Z, fileName, outFormat='png'):
+def plot_contour(X, Y, Z, filePath, fileName, outFormat='png'):
     """
-    Plots the Excitation and Emission data and saves the figure as a .png file.
+    Plot excitation and emission data and saves as .png file.
+    :param X: x points array
+    :param Y: y points array
+    :param Z: contour array for X and Y
+    :param filePath: path to CD file folder.
+    :param fileName: file name.
+    :outFormat: output file extension (.png, .svg, .pdf). Default is .png.
+    :return: None
     """
     hfont = {'fontname':'Arial'}
 
@@ -61,8 +72,7 @@ def plot_contour(X, Y, Z, fileName, outFormat='png'):
     
     return
 
-
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description='This script accepts a file path to a folder containing .csv files of emission-excitation data and outputs the corresponding contour plots in .png or .svg format.')
     parser.add_argument('file_path', help='File path to the .csv file folder.')
     parser.add_argument('save_as', help='Output file type. Choose between .png or .svg.', type=str, default='png')
@@ -78,10 +88,13 @@ if __name__ == "__main__":
     for file in fileNames:
         try:
             X, Y, Z = get_XYZ(filePath, file)
-            plot_contour(X, Y, Z, file, outFormat)
+            plot_contour(X, Y, Z, filePath, file, outFormat)
             count += 1
         except:
             print(f'Failed to plot {file}.')
             continue
             
-    print(f'Succesfully plotted {count}/{len(fileNames)} files.')    
+    print(f'Succesfully plotted {count}/{len(fileNames)} files.')  
+
+if __name__ == "__main__":
+    main()
